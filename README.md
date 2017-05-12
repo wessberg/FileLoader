@@ -27,6 +27,10 @@ const buffers = await fileLoader.getFilesInDirectory("some_dir", [".ts"]);
 
 ## Changelog:
 
+**v1.0.2**:
+
+- Added `exists` methods.
+
 **v1.0.0**:
 
 - First release.

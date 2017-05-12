@@ -1,0 +1,35 @@
+{
+  "name": "@wessberg/fileloader",
+  "version": "1.0.0",
+  "description": "A Promise-based class that can offers different ways of loading files from disk, including wrappers around the synchronous I/O methods from node.",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/es2015/index.js",
+  "browser": "./dist/es2015/index.js",
+  "types": "./dist/es2015/index.d.ts",
+  "typings": "./dist/es2015/index.d.ts",
+  "scripts": {
+    "build:pre": "mkdir -p dist/cjs/interface && mkdir -p dist/es2015/interface",
+    "build:cjs": "tsc --module commonjs --outDir dist/cjs -p tsconfig.dist.json",
+    "build:es2015": "tsc --module es2015 --outDir dist/es2015 -p tsconfig.dist.json",
+    "build": "npm run build:pre && npm run build:cjs && npm run build:es2015",
+    "test:pre": "tsc --module commonjs --target es2017 --sourceMap",
+    "test": "NODE_ENV=TEST npm run test:pre && ava "
+  },
+  "keywords": [
+    "file",
+    "load",
+    "promise",
+    "fs",
+    "node",
+    "loading",
+    "io",
+    "disk"
+  ],
+  "author": "Frederik Wessberg",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^7.0.18",
+    "ava": "^0.19.1",
+    "typescript": "2.3.0"
+  }
+}

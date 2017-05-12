@@ -1,4 +1,8 @@
 export interface IFileLoader {
+	exists (path: string): Promise<boolean>;
+	existsSync (path: string): boolean;
+	existsWithFirstMatchedExtension (path: string, extensions: string[]): Promise<[boolean, string|null]>;
+	existsWithFirstMatchedExtensionSync (path: string, extensions: string[]): [boolean, string|null];
 	load (path: string): Promise<Buffer>;
 	loadSync (path: string): Buffer;
 	loadAny (paths: string[]): Promise<[Buffer | null, string | null]>;

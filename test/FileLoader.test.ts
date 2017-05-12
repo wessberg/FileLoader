@@ -5,16 +5,16 @@ import {join} from 'path';
 let fileLoader: IFileLoader;
 const ASSET_DIR = join(__dirname, "../../", "test/asset");
 const DUMMY_PATH = `${ASSET_DIR}/dummy`;
-const DUMMY_JS_PATH = `${DUMMY_PATH}.txt`;
+const DUMMY_TXT_PATH = `${DUMMY_PATH}.txt`;
 test.beforeEach(() => fileLoader = new FileLoader());
 
 test(`load() -> Loads a file from disk properly`, async t => {
-	const buffer = await fileLoader.load(DUMMY_JS_PATH);
+	const buffer = await fileLoader.load(DUMMY_TXT_PATH);
 	t.true(buffer != null);
 });
 
 test(`loadSync() -> Loads a file from disk properly`, t => {
-	const buffer = fileLoader.loadSync(DUMMY_JS_PATH);
+	const buffer = fileLoader.loadSync(DUMMY_TXT_PATH);
 	t.true(buffer != null);
 });
 
@@ -90,5 +90,10 @@ test(`loadWithFirstMatchingExtension() -> Loads all files in the given directory
 
 test(`loadWithFirstMatchingExtension() -> Loads all files in the given directory #3`, async t => {
 	const [buffer] = await fileLoader.loadWithFirstMatchedExtension(DUMMY_PATH, [".txt"]);
+	t.true(buffer != null);
+});
+
+test(`existsWithFirstMatchedExtension() -> Can detect the existence of files #1`, async t => {
+	const [buffer] = await fileLoader.existsWithFirstMatchedExtension(DUMMY_PATH, [".txt"]);
 	t.true(buffer != null);
 });

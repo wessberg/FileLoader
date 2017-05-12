@@ -1,4 +1,4 @@
-import {readdir, readdirSync, readFile, readFileSync} from 'fs';
+import {exists, existsSync, readdir, readdirSync, readFile, readFileSync} from 'fs';
 import {IFileLoader} from './Interface/IFileLoader';
 
 /**
@@ -7,6 +7,24 @@ import {IFileLoader} from './Interface/IFileLoader';
  * @author Frederik Wessberg
  */
 export class FileLoader implements IFileLoader {
+
+	/**
+	 * Checks if the given path exists and returns a Promise that resolves with a boolean value.
+	 * @param {string} path
+	 * @returns {Promise<boolean>}
+	 */
+	public async exists (path: string): Promise<boolean> {
+		return new Promise<boolean>(resolve => exists(path, resolve));
+	}
+
+	/**
+	 * Checks if the given path exists and returns a a boolean value.
+	 * @param {string} path
+	 * @returns {boolean}
+	 */
+	public existsSync (path: string): boolean {
+		return existsSync(path);
+	}
 
 	/**
 	 * Loads the file on the given path and resolves the Promise with a Buffer when the files has successfully loaded.
@@ -29,6 +47,47 @@ export class FileLoader implements IFileLoader {
 	 */
 	public loadSync (path: string): Buffer {
 		return readFileSync(path);
+	}
+
+	/**
+	 * Checks for the existence on disk of the given path and first match in the array of extensions.
+	 * It returns a Promise that will resolve with a tuple with a boolean indicating whether it exists or not and the full path to the file, if any.
+	 * @param {string} path
+	 * @param {string[]} extensions
+	 * @returns {Promise<[boolean, string|null]>}
+	 */
+	public async existsWithFirstMatchedExtension (path: string, extensions: string[]): Promise<[boolean, string|null]> {
+		return new Promise<[boolean, string | null]>((resolve) => {
+			const self = this;
+			let cursor = 0;
+
+			(async function inner (): Promise<void> {
+				try {
+					if (cursor >= extensions.length) return resolve([false, null]);
+					const fullPath = `${path}${self.normalizeExtension(extensions[cursor++])}`;
+					const exists = await self.exists(fullPath);
+					resolve([exists, fullPath]);
+				} catch (e) {
+					await inner();
+				}
+			}());
+		});
+	}
+
+	/**
+	 * Checks for the existence on disk of the given path and first match in the array of extensions.
+	 * It returns a tuple with a boolean indicating whether it exists or not and the full path to the file, if any.
+	 * @param {string} path
+	 * @param {string[]} extensions
+	 * @returns {[boolean, string|null]}
+	 */
+	public existsWithFirstMatchedExtensionSync (path: string, extensions: string[]): [boolean, string|null] {
+		for (const ext of extensions) {
+			const fullPath = `${path}${this.normalizeExtension(ext)}`;
+			const exists = this.existsSync(fullPath);
+			if (exists) return [true, fullPath];
+		}
+		return [false, null];
 	}
 
 	/**

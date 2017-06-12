@@ -1,6 +1,6 @@
 {
   "name": "@wessberg/fileloader",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A Promise-based class that can offers different ways of loading files from disk, including wrappers around the synchronous I/O methods from node.",
   "main": "./dist/cjs/index.js",
   "module": "./dist/es2015/index.js",

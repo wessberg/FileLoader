@@ -4,6 +4,10 @@
 ## Installation
 Simply do: `npm install @wessberg/fileloader`.
 
+## DISCLAIMER
+
+This is a very early version. The API may still change greatly.
+
 ## Usage
 ```typescript
 const fileLoader = new FileLoader();
@@ -26,6 +30,10 @@ const buffers = await fileLoader.getFilesInDirectory("some_dir", [".ts"]);
 ```
 
 ## Changelog:
+
+**v1.0.3**:
+
+- Added a disclaimer to the README.
 
 **v1.0.2**:
 

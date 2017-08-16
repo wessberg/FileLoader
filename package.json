@@ -1,35 +1,77 @@
 {
-  "name": "@wessberg/fileloader",
-  "version": "1.0.3",
-  "description": "A Promise-based class that can offers different ways of loading files from disk, including wrappers around the synchronous I/O methods from node.",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/es2015/index.js",
-  "browser": "./dist/es2015/index.js",
-  "types": "./dist/es2015/index.d.ts",
-  "typings": "./dist/es2015/index.d.ts",
-  "scripts": {
-    "build:pre": "mkdir -p dist/cjs/interface && mkdir -p dist/es2015/interface",
-    "build:cjs": "tsc --module commonjs --outDir dist/cjs -p tsconfig.dist.json",
-    "build:es2015": "tsc --module es2015 --outDir dist/es2015 -p tsconfig.dist.json",
-    "build": "npm run build:pre && npm run build:cjs && npm run build:es2015",
-    "test:pre": "tsc --module commonjs --target es2017 --sourceMap",
-    "test": "NODE_ENV=TEST npm run test:pre && ava "
-  },
-  "keywords": [
-    "file",
-    "load",
-    "promise",
-    "fs",
-    "node",
-    "loading",
-    "io",
-    "disk"
-  ],
-  "author": "Frederik Wessberg",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^7.0.18",
-    "ava": "^0.19.1",
-    "typescript": "2.3.0"
-  }
+	"name": "@wessberg/fileloader",
+	"version": "1.0.3",
+	"description": "A Promise-based class that can offers different ways of loading files from disk, including wrappers around the synchronous I/O methods from node.",
+	"scripts": {
+		"test": "NODE_ENV=TEST ava --fail-fast",
+		"changelog:generate": "conventional-changelog --outfile CHANGELOG.md --release-count 0",
+		"readme:changelog": "node node_modules/@wessberg/ts-config/readme/changelog/helper/add-changelog.js",
+		"readme:badges": "node node_modules/@wessberg/ts-config/readme/badge/helper/add-badges.js",
+		"readme:refresh": "npm run changelog:generate && npm run readme:changelog && npm run readme:badges",
+		"commit:readme": "npm run readme:refresh && git commit -am \"Bumped version\" --no-verify || true",
+		"clean:dist": "rm -r -f dist",
+		"clean:compiled": "rm -r -f compiled",
+		"clean": "npm run clean:dist && npm run clean:compiled",
+		"tsc:dist:umd": "tsc --module umd --outDir dist/umd -p tsconfig.dist.json",
+		"tsc:dist:es2015": "tsc --module es2015 --outDir dist/es2015 -p tsconfig.dist.json",
+		"tsc:test": "tsc --module umd --target es2017 --sourceMap",
+		"build:pre": "npm run clean",
+		"build:umd": "npm run tsc:dist:umd",
+		"build:es2015": "npm run tsc:dist:es2015",
+		"build": "npm run build:pre && npm run build:umd && npm run build:es2015",
+		"tslint": "tslint -c tslint.json -p tsconfig.json",
+		"validate": "npm run tslint && npm run test",
+		"pretest": "npm run clean:compiled && npm run tsc:test",
+		"posttest": "npm run clean:compiled",
+		"prepublishOnly": "npm run validate && npm run build",
+		"precommit": "npm run tslint && exit 0",
+		"prepush": "npm run validate && exit 0",
+		"publish:major": "npm version major && npm run commit:readme && git push && npm publish",
+		"publish:minor": "npm version minor && npm run commit:readme && git push && npm publish",
+		"publish:patch": "npm version patch && npm run commit:readme && git push && npm publish"
+	},
+	"keywords": [
+		"file",
+		"load",
+		"promise",
+		"fs",
+		"node",
+		"loading",
+		"io",
+		"disk"
+	],
+	"devDependencies": {
+		"@types/node": "^8.0.22",
+		"@wessberg/ts-config": "0.0.21",
+		"ava": "^0.22.0",
+		"typescript": "2.4.2",
+		"tslint": "latest",
+		"husky": "latest",
+		"conventional-changelog-cli": "latest"
+	},
+	"dependencies": {
+		"tslib": "^1.7.1"
+	},
+	"main": "./dist/umd/index.js",
+	"module": "./dist/es2015/index.js",
+	"browser": "./dist/es2015/index.js",
+	"types": "./dist/es2015/index.d.ts",
+	"typings": "./dist/es2015/index.d.ts",
+	"es2015": "./dist/es2015/index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/wessberg/fileloader.git"
+	},
+	"bugs": {
+		"url": "https://github.com/wessberg/fileloader/issues"
+	},
+	"author": {
+		"name": "Frederik Wessberg",
+		"email": "frederikwessberg@hotmail.com",
+		"url": "https://github.com/wessberg"
+	},
+	"engines": {
+		"node": ">=7.4.0"
+	},
+	"license": "MIT"
 }

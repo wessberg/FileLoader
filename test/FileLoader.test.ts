@@ -1,7 +1,8 @@
 import {test} from "ava";
-import {IFileLoader} from '../src/interface/IFileLoader';
-import {FileLoader} from '../src/FileLoader';
-import {join} from 'path';
+import {IFileLoader} from "../src/i-file-loader";
+import {FileLoader} from "../src/file-loader";
+import {join} from "path";
+
 let fileLoader: IFileLoader;
 const ASSET_DIR = join(__dirname, "../../", "test/asset");
 const DUMMY_PATH = `${ASSET_DIR}/dummy`;
@@ -19,62 +20,62 @@ test(`loadSync() -> Loads a file from disk properly`, t => {
 });
 
 test(`getFilesInDirectory() -> Gets all files in the given directory #1`, async t => {
-	const files = await fileLoader.getFilesInDirectory(ASSET_DIR);
+	const files = await fileLoader.getAllInDirectory(ASSET_DIR);
 	t.true(files.length === 2);
 });
 
 test(`getFilesInDirectory() -> Gets all files in the given directory #2`, async t => {
-	const files = await fileLoader.getFilesInDirectory(ASSET_DIR, ["txt"]);
+	const files = await fileLoader.getAllInDirectory(ASSET_DIR, ["txt"]);
 	t.true(files.length === 1);
 });
 
 test(`getFilesInDirectory() -> Gets all files in the given directory #3`, async t => {
-	const files = await fileLoader.getFilesInDirectory(ASSET_DIR, [".txt"]);
+	const files = await fileLoader.getAllInDirectory(ASSET_DIR, [".txt"]);
 	t.true(files.length === 1);
 });
 
 test(`getFilesInDirectory() -> Gets all files in the given directory #4`, async t => {
-	const files = await fileLoader.getFilesInDirectory(ASSET_DIR, ["weird_extension"]);
+	const files = await fileLoader.getAllInDirectory(ASSET_DIR, ["weird_extension"]);
 	t.true(files.length === 0);
 });
 
 test(`getFilesInDirectory() -> Gets all files in the given directory #5`, async t => {
-	const files = await fileLoader.getFilesInDirectory(ASSET_DIR, [".weird_extension"]);
+	const files = await fileLoader.getAllInDirectory(ASSET_DIR, [".weird_extension"]);
 	t.true(files.length === 0);
 });
 
 test(`getFilesInDirectory() -> Gets all files in the given directory #6`, async t => {
-	const files = await fileLoader.getFilesInDirectory(ASSET_DIR);
+	const files = await fileLoader.getAllInDirectory(ASSET_DIR);
 	t.true(files.length === 2);
 });
 
 test(`getFilesInDirectorySync() -> Gets all files in the given directory #1`, t => {
-	const files = fileLoader.getFilesInDirectorySync(ASSET_DIR);
+	const files = fileLoader.getAllInDirectorySync(ASSET_DIR);
 	t.true(files.length === 2);
 });
 
 test(`getFilesInDirectorySync() -> Gets all files in the given directory #2`, t => {
-	const files = fileLoader.getFilesInDirectorySync(ASSET_DIR, ["txt"]);
+	const files = fileLoader.getAllInDirectorySync(ASSET_DIR, ["txt"]);
 	t.true(files.length === 1);
 });
 
 test(`getFilesInDirectorySync() -> Gets all files in the given directory #3`, t => {
-	const files = fileLoader.getFilesInDirectorySync(ASSET_DIR, [".txt"]);
+	const files = fileLoader.getAllInDirectorySync(ASSET_DIR, [".txt"]);
 	t.true(files.length === 1);
 });
 
 test(`getFilesInDirectorySync() -> Gets all files in the given directory #4`, t => {
-	const files = fileLoader.getFilesInDirectorySync(ASSET_DIR, ["weird_extension"]);
+	const files = fileLoader.getAllInDirectorySync(ASSET_DIR, ["weird_extension"]);
 	t.true(files.length === 0);
 });
 
 test(`getFilesInDirectory() -> Gets all files in the given directory #5`, t => {
-	const files = fileLoader.getFilesInDirectorySync(ASSET_DIR, [".weird_extension"]);
+	const files = fileLoader.getAllInDirectorySync(ASSET_DIR, [".weird_extension"]);
 	t.true(files.length === 0);
 });
 
 test(`getFilesInDirectory() -> Gets all files in the given directory #6`, t => {
-	const files = fileLoader.getFilesInDirectorySync(ASSET_DIR);
+	const files = fileLoader.getAllInDirectorySync(ASSET_DIR);
 	t.true(files.length === 2);
 });
 

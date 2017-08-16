@@ -1,2 +1,2 @@
-export {FileLoader} from './FileLoader';
-export {IFileLoader} from './interface/IFileLoader';
+export {FileLoader} from "./file-loader";
+export {IFileLoader} from "./i-file-loader";

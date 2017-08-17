@@ -1,15 +1,5 @@
 # FileLoader
 [![NPM version][npm-version-image]][npm-version-url]
-[![Dev Dependencies][dev-dependencies-image]][dev-dependencies-url]
-
-[dev-dependencies-url]: https://david-dm.org/wessberg/typedetector?type=dev
-
-[dev-dependencies-image]: https://david-dm.org/hub.com/wessberg/fileloader/dev-status.svg
-[![deps][deps-image]][deps-url]
-
-[deps-url]: https://david-dm.org/wessberg/typedetector
-
-[deps-image]: https://david-dm.org/hub.com/wessberg/fileloader/status.svg
 [![License-mit][license-mit-image]][license-mit-url]
 
 [license-mit-url]: https://opensource.org/licenses/MIT

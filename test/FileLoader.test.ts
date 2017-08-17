@@ -80,18 +80,18 @@ test(`getFilesInDirectory() -> Gets all files in the given directory #6`, t => {
 });
 
 test(`loadWithFirstMatchingExtension() -> Loads all files in the given directory #1`, async t => {
-	const [buffer] = await fileLoader.loadWithFirstMatchedExtension(DUMMY_PATH, [".weird_extension"]);
-	t.true(buffer == null);
+	const result = await fileLoader.loadWithFirstMatchedExtension(DUMMY_PATH, [".weird_extension"]);
+	t.true(result == null);
 });
 
 test(`loadWithFirstMatchingExtension() -> Loads all files in the given directory #2`, async t => {
-	const [buffer] = await fileLoader.loadWithFirstMatchedExtension(DUMMY_PATH, [".md"]);
-	t.true(buffer != null);
+	const result = await fileLoader.loadWithFirstMatchedExtension(DUMMY_PATH, [".md"]);
+	t.true(result != null);
 });
 
 test(`loadWithFirstMatchingExtension() -> Loads all files in the given directory #3`, async t => {
-	const [buffer] = await fileLoader.loadWithFirstMatchedExtension(DUMMY_PATH, [".txt"]);
-	t.true(buffer != null);
+	const result = await fileLoader.loadWithFirstMatchedExtension(DUMMY_PATH, [".txt"]);
+	t.true(result != null);
 });
 
 test(`existsWithFirstMatchedExtension() -> Can detect the existence of files #1`, async t => {

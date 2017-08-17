@@ -358,9 +358,9 @@ export class FileLoader implements IFileLoader {
 	 * @returns {Promise<boolean>}
 	 */
 	public async isDirectory (path: string): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
+		return new Promise<boolean>(resolve => {
 			lstat(path, (err, stats) => {
-				if (err != null) reject(err);
+				if (err != null) resolve(false);
 				else resolve(stats.isDirectory());
 			});
 		});
@@ -372,7 +372,11 @@ export class FileLoader implements IFileLoader {
 	 * @returns {boolean}
 	 */
 	public isDirectorySync (path: string): boolean {
-		return lstatSync(path).isDirectory();
+		try {
+			return lstatSync(path).isDirectory();
+		} catch (ex) {
+			return false;
+		}
 	}
 
 	/**

@@ -11,10 +11,10 @@ export interface IFileLoader {
 	loadAnySync (paths: Iterable<string>): null|[Buffer, string];
 	loadAll (files: Iterable<string>): Promise<Buffer[]>;
 	loadAllSync (files: Iterable<string>): Buffer[];
-	loadAllInDirectory (directory: string, extensions?: Iterable<string>, recursive?: boolean): Promise<Buffer[]>;
-	loadAllInDirectorySync (directory: string, extensions?: Iterable<string>, recursive?: boolean): Buffer[];
+	loadAllInDirectory (directory: string, extensions?: Iterable<string>, excludedExtensions?: Iterable<string>, recursive?: boolean): Promise<Buffer[]>;
+	loadAllInDirectorySync (directory: string, extensions?: Iterable<string>, excludedExtensions?: Iterable<string>, recursive?: boolean): Buffer[];
 	loadWithFirstMatchedExtension (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): Promise<null|[Buffer, string]>;
 	loadWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): null|[Buffer, string];
-	getAllInDirectory (directory: string, extensions?: Iterable<string>, recursive?: boolean): Promise<string[]>;
-	getAllInDirectorySync (directory: string, extensions?: Iterable<string>, recursive?: boolean): string[];
+	getAllInDirectory (directory: string, extensions?: Iterable<string>, excludedExtensions?: Iterable<string>, recursive?: boolean): Promise<string[]>;
+	getAllInDirectorySync (directory: string, extensions?: Iterable<string>, excludedExtensions?: Iterable<string>, recursive?: boolean): string[];
 }

@@ -266,10 +266,11 @@ export class FileLoader implements IFileLoader {
 	 * only files with any of those extensions will be matched.
 	 * @param {string} directory
 	 * @param {Iterable<string>} [extensions]
+	 * @param {Iterable<string>} [excludedExtensions]
 	 * @param {boolean} [recursive=false]
 	 * @returns {Promise<Iterable<string>>}
 	 */
-	public async getAllInDirectory (directory: string, extensions?: Iterable<string>, recursive: boolean = false): Promise<string[]> {
+	public async getAllInDirectory (directory: string, extensions?: Iterable<string>, excludedExtensions?: Iterable<string>, recursive: boolean = false): Promise<string[]> {
 		const paths = await this.readdirPromise(directory);
 		const newPaths: string[] = [];
 
@@ -279,7 +280,7 @@ export class FileLoader implements IFileLoader {
 
 			// If the file is not a directory, allow it if it has a proper extension
 			if (!isDirectory) {
-				if (this.fileHasValidExtension(filePath, extensions)) newPaths.push(filePath);
+				if (this.fileHasValidExtension(filePath, extensions) && !this.matchedFileIsExcluded(filePath, excludedExtensions)) newPaths.push(filePath);
 				return;
 			}
 
@@ -287,7 +288,7 @@ export class FileLoader implements IFileLoader {
 			if (!recursive) return false;
 
 			// Otherwise, recursively push more paths to the array of new paths.
-			return newPaths.push(...(await this.getAllInDirectory(filePath, extensions, recursive)));
+			return newPaths.push(...(await this.getAllInDirectory(filePath, extensions, excludedExtensions, recursive)));
 		}));
 		return newPaths;
 	}
@@ -297,10 +298,11 @@ export class FileLoader implements IFileLoader {
 	 * only files with any of those extensions will be matched.
 	 * @param {string} directory
 	 * @param {Iterable<string>} [extensions]
+	 * @param {Iterable<string>} [excludedExtensions]
 	 * @param {boolean} [recursive]
 	 * @returns {Iterable<string>}
 	 */
-	public getAllInDirectorySync (directory: string, extensions?: Iterable<string>, recursive: boolean = false): string[] {
+	public getAllInDirectorySync (directory: string, extensions?: Iterable<string>, excludedExtensions?: Iterable<string>, recursive: boolean = false): string[] {
 		const paths = readdirSync(directory);
 		const newPaths: string[] = [];
 
@@ -310,7 +312,7 @@ export class FileLoader implements IFileLoader {
 
 			// If the file is not a directory, allow it if it has a proper extension
 			if (!isDirectory) {
-				if (this.fileHasValidExtension(filePath, extensions)) newPaths.push(filePath);
+				if (this.fileHasValidExtension(filePath, extensions) && !this.matchedFileIsExcluded(filePath, excludedExtensions)) newPaths.push(filePath);
 				return;
 			}
 
@@ -318,7 +320,7 @@ export class FileLoader implements IFileLoader {
 			if (!recursive) return false;
 
 			// Otherwise, recursively push more paths to the array of new paths.
-			return newPaths.push(...this.getAllInDirectorySync(filePath, extensions, recursive));
+			return newPaths.push(...this.getAllInDirectorySync(filePath, extensions, excludedExtensions, recursive));
 		});
 		return newPaths;
 	}
@@ -328,11 +330,12 @@ export class FileLoader implements IFileLoader {
 	 * a Promise that will resolve with an array of Buffers.
 	 * @param {string} directory
 	 * @param {Iterable<string>} [extensions]
+	 * @param {Iterable<string>} [excludedExtensions]
 	 * @param {boolean} [recursive=false]
 	 * @returns {Promise<Buffer[]>}
 	 */
-	public async loadAllInDirectory (directory: string, extensions?: Iterable<string>, recursive: boolean = false): Promise<Buffer[]> {
-		const paths = await this.getAllInDirectory(directory, extensions, recursive);
+	public async loadAllInDirectory (directory: string, extensions?: Iterable<string>, excludedExtensions?: Iterable<string>, recursive: boolean = false): Promise<Buffer[]> {
+		const paths = await this.getAllInDirectory(directory, extensions, excludedExtensions, recursive);
 		return await Promise.all(paths.map(async path => await this.load(path)));
 	}
 
@@ -340,11 +343,12 @@ export class FileLoader implements IFileLoader {
 	 * Loads all files inside the given directory with the given extension and returns an array of Buffers.
 	 * @param {string} directory
 	 * @param {Iterable<string>} [extensions]
+	 * @param {Iterable<string>} [excludedExtensions]
 	 * @param {boolean} [recursive=false]
 	 * @returns {Buffer[]}
 	 */
-	public loadAllInDirectorySync (directory: string, extensions?: Iterable<string>, recursive: boolean = false): Buffer[] {
-		return this.getAllInDirectorySync(directory, extensions, recursive)
+	public loadAllInDirectorySync (directory: string, extensions?: Iterable<string>, excludedExtensions?: Iterable<string>, recursive: boolean = false): Buffer[] {
+		return this.getAllInDirectorySync(directory, extensions, excludedExtensions, recursive)
 			.map(path => this.loadSync(path));
 	}
 

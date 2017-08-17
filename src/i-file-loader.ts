@@ -3,8 +3,8 @@ export interface IFileLoader {
 	isDirectorySync (path: string): boolean;
 	exists (path: string): Promise<boolean>;
 	existsSync (path: string): boolean;
-	existsWithFirstMatchedExtension (path: string, extensions: Iterable<string>): Promise<[boolean, string|null]>;
-	existsWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>): [boolean, string|null];
+	existsWithFirstMatchedExtension (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): Promise<[boolean, string|null]>;
+	existsWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): [boolean, string|null];
 	load (path: string): Promise<Buffer>;
 	loadSync (path: string): Buffer;
 	loadAny (paths: Iterable<string>): Promise<null|[Buffer, string]>;
@@ -13,8 +13,8 @@ export interface IFileLoader {
 	loadAllSync (files: Iterable<string>): Buffer[];
 	loadAllInDirectory (directory: string, extensions?: Iterable<string>, recursive?: boolean): Promise<Buffer[]>;
 	loadAllInDirectorySync (directory: string, extensions?: Iterable<string>, recursive?: boolean): Buffer[];
-	loadWithFirstMatchedExtension (path: string, extensions: Iterable<string>): Promise<null|[Buffer, string]>;
-	loadWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>): null|[Buffer, string];
+	loadWithFirstMatchedExtension (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): Promise<null|[Buffer, string]>;
+	loadWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): null|[Buffer, string];
 	getAllInDirectory (directory: string, extensions?: Iterable<string>, recursive?: boolean): Promise<string[]>;
 	getAllInDirectorySync (directory: string, extensions?: Iterable<string>, recursive?: boolean): string[];
 }

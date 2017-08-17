@@ -63,9 +63,10 @@ export class FileLoader implements IFileLoader {
 	 * It returns a Promise that will resolve with a tuple with a boolean indicating whether it exists or not and the full path to the file, if any.
 	 * @param {string} path
 	 * @param {Iterable<string>} extensions
+	 * @param {Iterable<string>} [excludeExtensions]
 	 * @returns {Promise<[boolean, string|null]>}
 	 */
-	public async existsWithFirstMatchedExtension (path: string, extensions: Iterable<string>): Promise<[boolean, string|null]> {
+	public async existsWithFirstMatchedExtension (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): Promise<[boolean, string|null]> {
 		return new Promise<[boolean, string|null]>((resolve) => {
 			const self = this;
 			let cursor = 0;
@@ -76,7 +77,13 @@ export class FileLoader implements IFileLoader {
 					if (cursor >= array.length) return resolve([false, null]);
 					const fullPath = `${path}${self.normalizeExtension(array[cursor++])}`;
 					const doesExist = await self.exists(fullPath);
-					resolve([doesExist, fullPath]);
+					// If the file exists but is caught by the Set of excluded extensions, don't resolve that file.
+					if (doesExist && self.matchedFileIsExcluded(fullPath, excludeExtensions)) {
+						// Recurse
+						await inner();
+					} else {
+						resolve([doesExist, fullPath]);
+					}
 				} catch (e) {
 					await inner();
 				}
@@ -85,16 +92,31 @@ export class FileLoader implements IFileLoader {
 	}
 
 	/**
+	 * Returns true if a file path is included in the given set of excluded extensions.
+	 * @param {string} filePath
+	 * @param {Iterable<string>} excludeExtensions
+	 * @returns {boolean}
+	 */
+	private matchedFileIsExcluded (filePath: string, excludeExtensions?: Iterable<string>): boolean {
+		if (excludeExtensions == null) return false;
+		const array = this.toArray(excludeExtensions);
+		return array.some(excludedExtension => filePath.endsWith(excludedExtension));
+	}
+
+	/**
 	 * Checks for the existence on disk of the given path and first match in the array of extensions.
 	 * It returns a tuple with a boolean indicating whether it exists or not and the full path to the file, if any.
 	 * @param {string} path
 	 * @param {Iterable<string>} extensions
+	 * @param {Iterable<string>} [excludeExtensions]
 	 * @returns {[boolean, string|null]}
 	 */
-	public existsWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>): [boolean, string|null] {
+	public existsWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): [boolean, string|null] {
 		for (const ext of extensions) {
 			const fullPath = `${path}${this.normalizeExtension(ext)}`;
 			const doesExist = this.existsSync(fullPath);
+			// If the file exists but is actually excluded, continue.
+			if (doesExist && this.matchedFileIsExcluded(fullPath, excludeExtensions)) continue;
 			if (doesExist) return [true, fullPath];
 		}
 		return [false, null];
@@ -105,12 +127,13 @@ export class FileLoader implements IFileLoader {
 	 * and returns a tuple of the buffer and the matched path.
 	 * @param {string} path
 	 * @param {Iterable<string>} extensions
+	 * @param {Iterable<string>} [excludeExtensions]
 	 * @returns {[Buffer|null, string|null]}
 	 */
-	public loadWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>): null|[Buffer, string] {
+	public loadWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): null|[Buffer, string] {
 		const array = this.toArray(extensions);
 		const pathHasExtension = array.some(ext => path.endsWith(this.normalizeExtension(ext)));
-		if (pathHasExtension) {
+		if (pathHasExtension && !this.matchedFileIsExcluded(path, excludeExtensions)) {
 			const buffer = this.loadSync(path);
 			return [buffer, path];
 		}
@@ -126,7 +149,10 @@ export class FileLoader implements IFileLoader {
 
 				const loadPath = `${path}${self.normalizeExtension(array[cursor++])}`;
 				const result = self.loadSync(loadPath);
-				value = [result, loadPath];
+				if (result != null && self.matchedFileIsExcluded(loadPath, excludeExtensions)) inner();
+				else {
+					value = [result, loadPath];
+				}
 			} catch (e) {
 				inner();
 			}
@@ -139,12 +165,13 @@ export class FileLoader implements IFileLoader {
 	 * and returns a Promise that will eventually resolve with a tuple of the buffer and the matched path.
 	 * @param {string} path
 	 * @param {Iterable<string>} extensions
+	 * @param {Iterable<string>} [excludeExtensions]
 	 * @returns {Promise<[Buffer|null, string|null]>}
 	 */
-	public async loadWithFirstMatchedExtension (path: string, extensions: Iterable<string>): Promise<null|[Buffer, string]> {
+	public async loadWithFirstMatchedExtension (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): Promise<null|[Buffer, string]> {
 		const array = this.toArray(extensions);
 		const pathHasExtension = array.some(ext => path.endsWith(this.normalizeExtension(ext)));
-		if (pathHasExtension) {
+		if (pathHasExtension && !this.matchedFileIsExcluded(path, excludeExtensions)) {
 			const buffer = await this.load(path);
 			return [buffer, path];
 		}
@@ -157,7 +184,11 @@ export class FileLoader implements IFileLoader {
 					if (cursor >= array.length) return resolve(null);
 					const loadPath = `${path}${self.normalizeExtension(array[cursor++])}`;
 					const result = await self.load(loadPath);
-					resolve([result, loadPath]);
+					if (result != null && self.matchedFileIsExcluded(loadPath, excludeExtensions)) {
+						await inner();
+					} else {
+						resolve([result, loadPath]);
+					}
 				} catch (e) {
 					await inner();
 				}

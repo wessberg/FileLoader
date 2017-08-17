@@ -1,3 +1,12 @@
+<a name="1.1.2"></a>
+## 1.1.2 (2017-08-17)
+
+* 1.1.2 ([c37101b](https://github.com/wessberg/fileloader/commit/c37101b))
+* Added an 'excludedExtensions' property to some of the methods ([7b5d442](https://github.com/wessberg/fileloader/commit/7b5d442))
+* Bumped version ([344443f](https://github.com/wessberg/fileloader/commit/344443f))
+
+
+
 <a name="1.1.1"></a>
 ## 1.1.1 (2017-08-17)
 

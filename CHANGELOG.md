@@ -1,3 +1,12 @@
+<a name="1.1.0"></a>
+# 1.1.0 (2017-08-17)
+
+* 1.1.0 ([08de001](https://github.com/wessberg/fileloader/commit/08de001))
+* Added support for iterables rather than strictly string arrays where possible. Added breaking change ([9b3acf5](https://github.com/wessberg/fileloader/commit/9b3acf5))
+* Bumped version ([75bcc79](https://github.com/wessberg/fileloader/commit/75bcc79))
+
+
+
 <a name="1.0.4"></a>
 ## 1.0.4 (2017-08-16)
 

@@ -1,3 +1,12 @@
+<a name="1.1.3"></a>
+## 1.1.3 (2017-08-17)
+
+* 1.1.3 ([c062ed3](https://github.com/wessberg/fileloader/commit/c062ed3))
+* Bumped version ([2191f3f](https://github.com/wessberg/fileloader/commit/2191f3f))
+* Fixed an issue where an error would be thrown unneccesarily ([f3536ac](https://github.com/wessberg/fileloader/commit/f3536ac))
+
+
+
 <a name="1.1.2"></a>
 ## 1.1.2 (2017-08-17)
 

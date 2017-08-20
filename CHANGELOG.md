@@ -1,3 +1,12 @@
+<a name="1.1.4"></a>
+## 1.1.4 (2017-08-20)
+
+* 1.1.4 ([26e4e7e](https://github.com/wessberg/fileloader/commit/26e4e7e))
+* Bumped dependency on Typescript ([e77f24f](https://github.com/wessberg/fileloader/commit/e77f24f))
+* Bumped version ([6ec8089](https://github.com/wessberg/fileloader/commit/6ec8089))
+
+
+
 <a name="1.1.3"></a>
 ## 1.1.3 (2017-08-17)
 

@@ -1,3 +1,12 @@
+<a name="1.1.6"></a>
+## <small>1.1.6 (2018-02-03)</small>
+
+* 1.1.6 ([57e0eef](https://github.com/wessberg/fileloader/commit/57e0eef))
+* Bumped deps ([65d87ec](https://github.com/wessberg/fileloader/commit/65d87ec))
+* Bumped version ([fc285ac](https://github.com/wessberg/fileloader/commit/fc285ac))
+
+
+
 <a name="1.1.5"></a>
 ## <small>1.1.5 (2018-02-03)</small>
 

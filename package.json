@@ -13,7 +13,7 @@
 		"clean": "npm run clean:dist && npm run clean:compiled",
 		"tsc:dist:umd": "tsc --module umd --outDir dist/umd -p tsconfig.dist.json",
 		"tsc:dist:es2015": "tsc --module es2015 --outDir dist/es2015 -p tsconfig.dist.json",
-		"tsc:test": "tsc --module umd --target es2017 --sourceMap",
+		"tsc:test": "tsc --module umd --target es2017 --sourceMap --typeRoots \"./node_modules/@types\",\"./node_modules/typescript/lib/typescript\"",
 		"build:umd": "npm run tsc:dist:umd",
 		"build:es2015": "npm run tsc:dist:es2015",
 		"prebuild": "npm run clean",

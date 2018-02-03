@@ -1,6 +1,6 @@
 {
 	"name": "@wessberg/fileloader",
-	"version": "1.1.5",
+	"version": "1.1.6",
 	"description": "A Promise-based class that can offers different ways of loading files from disk, including wrappers around the synchronous I/O methods from node.",
 	"scripts": {
 		"test": "NODE_ENV=TEST ava --fail-fast",

@@ -3,8 +3,8 @@ export interface IFileLoader {
 	isDirectorySync (path: string): boolean;
 	exists (path: string): Promise<boolean>;
 	existsSync (path: string): boolean;
-	existsWithFirstMatchedExtension (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): Promise<[boolean, string|null]>;
-	existsWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): [boolean, string|null];
+	getWithFirstMatchedExtension (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): Promise<string|null>;
+	getWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): string|null;
 	load (path: string): Promise<Buffer>;
 	loadSync (path: string): Buffer;
 	loadAny (paths: Iterable<string>): Promise<null|[Buffer, string]>;

@@ -94,7 +94,7 @@ test(`loadWithFirstMatchingExtension() -> Loads all files in the given directory
 	t.true(result != null);
 });
 
-test(`existsWithFirstMatchedExtension() -> Can detect the existence of files #1`, async t => {
-	const [buffer] = await fileLoader.existsWithFirstMatchedExtension(DUMMY_PATH, [".txt"]);
-	t.true(buffer != null);
+test(`getWithFirstMatchedExtension() -> Can detect the existence of files #1`, async t => {
+	const path = await fileLoader.getWithFirstMatchedExtension(DUMMY_PATH, [".txt"]);
+	t.true(path != null);
 });

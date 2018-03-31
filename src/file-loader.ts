@@ -1,4 +1,4 @@
-import {existsSync, lstat, lstatSync, readdir, readdirSync, readFile, readFileSync, stat} from "fs";
+import {existsSync, lstat, lstatSync, readdir, readdirSync, readFile, readFileSync} from "fs";
 import {IFileLoader} from "./i-file-loader";
 
 /**
@@ -14,7 +14,11 @@ export class FileLoader implements IFileLoader {
 	 * @returns {Promise<boolean>}
 	 */
 	public async exists (path: string): Promise<boolean> {
-		return new Promise<boolean>((resolve) => stat(path, err => resolve(err != null)));
+		try {
+			return (await this.load(path)) != null;
+		} catch {
+			return false;
+		}
 	}
 
 	/**
@@ -64,31 +68,46 @@ export class FileLoader implements IFileLoader {
 	 * @param {string} path
 	 * @param {Iterable<string>} extensions
 	 * @param {Iterable<string>} [excludeExtensions]
-	 * @returns {Promise<[boolean, string|null]>}
+	 * @returns {Promise<string|null>}
 	 */
-	public async existsWithFirstMatchedExtension (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): Promise<[boolean, string|null]> {
-		return new Promise<[boolean, string|null]>((resolve) => {
-			const self = this;
-			let cursor = 0;
-			const array = this.toArray(extensions);
+	public async getWithFirstMatchedExtension (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): Promise<string|null> {
+		for (const ext of extensions) {
+			// If the path already ends with that extension and it exists, return it
+			if (path.endsWith(this.normalizeExtension(ext)) && !this.matchedFileIsExcluded(path, excludeExtensions) && await this.exists(path)) {
+				return path;
+			}
 
-			(async function inner (): Promise<void> {
-				try {
-					if (cursor >= array.length) return resolve([false, null]);
-					const fullPath = `${path}${self.normalizeExtension(array[cursor++])}`;
-					const doesExist = await self.exists(fullPath);
-					// If the file exists but is caught by the Set of excluded extensions, don't resolve that file.
-					if (doesExist && self.matchedFileIsExcluded(fullPath, excludeExtensions)) {
-						// Recurse
-						await inner();
-					} else {
-						resolve([doesExist, fullPath]);
-					}
-				} catch (e) {
-					await inner();
-				}
-			}());
-		});
+			const fullPath = `${path}${this.normalizeExtension(ext)}`;
+			// If the file exists but is actually excluded, continue.
+			if (await this.exists(fullPath) && !this.matchedFileIsExcluded(fullPath, excludeExtensions)) {
+				return fullPath;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Checks for the existence on disk of the given path and first match in the array of extensions.
+	 * It returns a tuple with a boolean indicating whether it exists or not and the full path to the file, if any.
+	 * @param {string} path
+	 * @param {Iterable<string>} extensions
+	 * @param {Iterable<string>} [excludeExtensions]
+	 * @returns {string|null}
+	 */
+	public getWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): string|null {
+		for (const ext of extensions) {
+			// If the path already ends with that extension and it exists, return it
+			if (path.endsWith(this.normalizeExtension(ext)) && !this.matchedFileIsExcluded(path, excludeExtensions) && this.existsSync(path)) {
+				return path;
+			}
+
+			const fullPath = `${path}${this.normalizeExtension(ext)}`;
+			// If the file exists but is actually excluded, continue.
+			if (this.existsSync(fullPath) && !this.matchedFileIsExcluded(fullPath, excludeExtensions)) {
+				return fullPath;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -99,27 +118,9 @@ export class FileLoader implements IFileLoader {
 	 */
 	private matchedFileIsExcluded (filePath: string, excludeExtensions?: Iterable<string>): boolean {
 		if (excludeExtensions == null) return false;
-		const array = this.toArray(excludeExtensions);
-		return array.some(excludedExtension => filePath.endsWith(excludedExtension));
-	}
 
-	/**
-	 * Checks for the existence on disk of the given path and first match in the array of extensions.
-	 * It returns a tuple with a boolean indicating whether it exists or not and the full path to the file, if any.
-	 * @param {string} path
-	 * @param {Iterable<string>} extensions
-	 * @param {Iterable<string>} [excludeExtensions]
-	 * @returns {[boolean, string|null]}
-	 */
-	public existsWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): [boolean, string|null] {
-		for (const ext of extensions) {
-			const fullPath = `${path}${this.normalizeExtension(ext)}`;
-			const doesExist = this.existsSync(fullPath);
-			// If the file exists but is actually excluded, continue.
-			if (doesExist && this.matchedFileIsExcluded(fullPath, excludeExtensions)) continue;
-			if (doesExist) return [true, fullPath];
-		}
-		return [false, null];
+		return this.toArray(excludeExtensions)
+			.some(excludedExtension => filePath.endsWith(excludedExtension));
 	}
 
 	/**
@@ -131,33 +132,8 @@ export class FileLoader implements IFileLoader {
 	 * @returns {[Buffer|null, string|null]}
 	 */
 	public loadWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): null|[Buffer, string] {
-		const array = this.toArray(extensions);
-		const pathHasExtension = array.some(ext => path.endsWith(this.normalizeExtension(ext)));
-		if (pathHasExtension && !this.matchedFileIsExcluded(path, excludeExtensions)) {
-			const buffer = this.loadSync(path);
-			return [buffer, path];
-		}
-
-		const self = this;
-		let cursor = 0;
-
-		let value: null|[Buffer, string] = null;
-
-		(function inner (): void {
-			try {
-				if (cursor >= array.length) return;
-
-				const loadPath = `${path}${self.normalizeExtension(array[cursor++])}`;
-				const result = self.loadSync(loadPath);
-				if (result != null && self.matchedFileIsExcluded(loadPath, excludeExtensions)) inner();
-				else {
-					value = [result, loadPath];
-				}
-			} catch (e) {
-				inner();
-			}
-		}());
-		return value;
+		const match = this.getWithFirstMatchedExtensionSync(path, extensions, excludeExtensions);
+		return match == null ? null : [this.loadSync(match), match];
 	}
 
 	/**
@@ -169,31 +145,8 @@ export class FileLoader implements IFileLoader {
 	 * @returns {Promise<[Buffer|null, string|null]>}
 	 */
 	public async loadWithFirstMatchedExtension (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): Promise<null|[Buffer, string]> {
-		const array = this.toArray(extensions);
-		const pathHasExtension = array.some(ext => path.endsWith(this.normalizeExtension(ext)));
-		if (pathHasExtension && !this.matchedFileIsExcluded(path, excludeExtensions)) {
-			const buffer = await this.load(path);
-			return [buffer, path];
-		}
-
-		return new Promise<null|[Buffer, string]>((resolve) => {
-			const self = this;
-			let cursor = 0;
-			(async function inner (): Promise<void> {
-				try {
-					if (cursor >= array.length) return resolve(null);
-					const loadPath = `${path}${self.normalizeExtension(array[cursor++])}`;
-					const result = await self.load(loadPath);
-					if (result != null && self.matchedFileIsExcluded(loadPath, excludeExtensions)) {
-						await inner();
-					} else {
-						resolve([result, loadPath]);
-					}
-				} catch (e) {
-					await inner();
-				}
-			}());
-		});
+		const match = await this.getWithFirstMatchedExtension(path, extensions, excludeExtensions);
+		return match == null ? null : [await this.load(match), match];
 	}
 
 	/**
@@ -202,20 +155,17 @@ export class FileLoader implements IFileLoader {
 	 * @returns {Promise<[Buffer,string]|null>}
 	 */
 	public async loadAny (paths: Iterable<string>): Promise<null|[Buffer, string]> {
-		return new Promise<null|[Buffer, string]>((resolve) => {
-			const self = this;
-			const array = this.toArray(paths);
-			let cursor = 0;
-			(async function inner (): Promise<void> {
-				try {
-					if (cursor >= array.length) return resolve(null);
-					const result = await self.load(array[cursor++]);
-					resolve([result, array[cursor]]);
-				} catch (e) {
-					await inner();
-				}
-			}());
-		});
+		for (const path of paths) {
+			try {
+				const loaded = await this.load(path);
+				return loaded == null ? null : [loaded, path];
+			} catch {
+				// Move on to the next path
+			}
+		}
+
+		// Default to returning null
+		return null;
 	}
 
 	/**
@@ -224,21 +174,17 @@ export class FileLoader implements IFileLoader {
 	 * @returns {[Buffer|null,string|null]}
 	 */
 	public loadAnySync (paths: Iterable<string>): null|[Buffer, string] {
-		const self = this;
-		let cursor = 0;
-		const array = this.toArray(paths);
-		let value: null|[Buffer, string] = null;
-
-		(function inner (): void {
+		for (const path of paths) {
 			try {
-				if (cursor >= array.length) return;
-				const result = self.loadSync(array[cursor++]);
-				value = [result, array[cursor]];
-			} catch (e) {
-				inner();
+				const loaded = this.loadSync(path);
+				return loaded == null ? null : [loaded, path];
+			} catch {
+				// Move on to the next path
 			}
-		}());
-		return value;
+		}
+
+		// Default to returning null
+		return null;
 	}
 
 	/**
@@ -247,8 +193,10 @@ export class FileLoader implements IFileLoader {
 	 * @returns {Promise<Buffer[]>}
 	 */
 	public async loadAll (paths: Iterable<string>): Promise<Buffer[]> {
-		const array = this.toArray(paths);
-		return await Promise.all(array.map(async path => await this.load(path)));
+		return await Promise.all(
+			this.toArray(paths)
+				.map(async path => await this.load(path))
+		);
 	}
 
 	/**
@@ -257,8 +205,8 @@ export class FileLoader implements IFileLoader {
 	 * @returns {Buffer[]}
 	 */
 	public loadAllSync (paths: Iterable<string>): Buffer[] {
-		const array = this.toArray(paths);
-		return array.map(path => this.loadSync(path));
+		return this.toArray(paths)
+			.map(path => this.loadSync(path));
 	}
 
 	/**
@@ -336,7 +284,9 @@ export class FileLoader implements IFileLoader {
 	 */
 	public async loadAllInDirectory (directory: string, extensions?: Iterable<string>, excludedExtensions?: Iterable<string>, recursive: boolean = false): Promise<Buffer[]> {
 		const paths = await this.getAllInDirectory(directory, extensions, excludedExtensions, recursive);
-		return await Promise.all(paths.map(async path => await this.load(path)));
+		return await Promise.all(
+			paths.map(async path => await this.load(path))
+		);
 	}
 
 	/**

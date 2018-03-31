@@ -1,3 +1,12 @@
+<a name="1.1.7"></a>
+## <small>1.1.7 (2018-03-31)</small>
+
+* 1.1.7 ([9a4f518](https://github.com/wessberg/fileloader/commit/9a4f518))
+* Bumped version ([61b9b0c](https://github.com/wessberg/fileloader/commit/61b9b0c))
+* Fixed a few bugs ([2822272](https://github.com/wessberg/fileloader/commit/2822272))
+
+
+
 <a name="1.1.6"></a>
 ## <small>1.1.6 (2018-02-03)</small>
 

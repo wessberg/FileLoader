@@ -5,6 +5,8 @@ export interface IFileLoader {
 	existsSync (path: string): boolean;
 	getWithFirstMatchedExtension (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): Promise<string|null>;
 	getWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): string|null;
+	getChecksum (path: string): Promise<string>;
+	getChecksumSync (path: string): string;
 	load (path: string): Promise<Buffer>;
 	loadSync (path: string): Buffer;
 	loadAny (paths: Iterable<string>): Promise<null|[Buffer, string]>;

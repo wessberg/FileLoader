@@ -1,5 +1,7 @@
 import {existsSync, lstat, lstatSync, readdir, readdirSync, readFile, readFileSync} from "fs";
 import {IFileLoader} from "./i-file-loader";
+// @ts-ignore
+import * as md5File from "md5-file/promise";
 
 /**
  * A Promise-based class that can offers different ways of loading files from disk, including wrappers around
@@ -361,6 +363,24 @@ export class FileLoader implements IFileLoader {
 				else resolve(paths);
 			});
 		});
+	}
+
+	/**
+	 * Gets the md5 checksum of the file on the given path
+	 * @param {string} path
+	 * @returns {Promise<string>}
+	 */
+	public async getChecksum (path: string): Promise<string> {
+		return await md5File(path);
+	}
+
+	/**
+	 * Synchronously gets the md5 checksum of the file on the given path
+	 * @param {string} path
+	 * @returns {Promise<string>}
+	 */
+	public getChecksumSync (path: string): string {
+		return md5File.sync(path);
 	}
 
 }

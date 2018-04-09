@@ -98,3 +98,13 @@ test(`getWithFirstMatchedExtension() -> Can detect the existence of files #1`, a
 	const path = await fileLoader.getWithFirstMatchedExtension(DUMMY_PATH, [".txt"]);
 	t.true(path != null);
 });
+
+test(`getChecksum() -> Can detect the checksum of files asynchronously #1`, async t => {
+	const checksum = await fileLoader.getChecksum(`${DUMMY_PATH}.txt`);
+	t.true(checksum != null);
+});
+
+test(`getChecksumSync() -> Can detect the checksum of files synchronously #1`, t => {
+	const checksum = fileLoader.getChecksumSync(`${DUMMY_PATH}.txt`);
+	t.true(checksum != null);
+});

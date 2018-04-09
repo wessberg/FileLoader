@@ -1,3 +1,12 @@
+<a name="1.1.9"></a>
+## <small>1.1.9 (2018-04-09)</small>
+
+* 'getChecksum' can now also compute the checksum of a directory ([4a3c1ff](https://github.com/wessberg/fileloader/commit/4a3c1ff))
+* 1.1.9 ([4e0e682](https://github.com/wessberg/fileloader/commit/4e0e682))
+* Bumped version ([6d3c726](https://github.com/wessberg/fileloader/commit/6d3c726))
+
+
+
 <a name="1.1.8"></a>
 ## <small>1.1.8 (2018-04-09)</small>
 

@@ -3,6 +3,9 @@ import {IFileLoader} from "./i-file-loader";
 // @ts-ignore
 import * as md5File from "md5-file/promise";
 
+// @ts-ignore
+import {hashElement} from "folder-hash";
+
 /**
  * A Promise-based class that can offers different ways of loading files from disk, including wrappers around
  * the synchronous I/O methods from node.
@@ -371,16 +374,6 @@ export class FileLoader implements IFileLoader {
 	 * @returns {Promise<string>}
 	 */
 	public async getChecksum (path: string): Promise<string> {
-		return await md5File(path);
+		return (await hashElement(path)).hash;
 	}
-
-	/**
-	 * Synchronously gets the md5 checksum of the file on the given path
-	 * @param {string} path
-	 * @returns {Promise<string>}
-	 */
-	public getChecksumSync (path: string): string {
-		return md5File.sync(path);
-	}
-
 }

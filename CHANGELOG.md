@@ -1,3 +1,12 @@
+<a name="1.1.8"></a>
+## <small>1.1.8 (2018-04-09)</small>
+
+* 1.1.8 ([fdf7cfd](https://github.com/wessberg/fileloader/commit/fdf7cfd))
+* Added the possibility of getting the checksum of a file ([d69aafe](https://github.com/wessberg/fileloader/commit/d69aafe))
+* Bumped version ([40401b6](https://github.com/wessberg/fileloader/commit/40401b6))
+
+
+
 <a name="1.1.7"></a>
 ## <small>1.1.7 (2018-03-31)</small>
 

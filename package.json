@@ -76,8 +76,7 @@
 	},
 	"dependencies": {
 		"@types/node": "13.5.1",
-		"folder-hash": "^3.3.0",
-		"md5-file": "^4.0.0"
+		"folder-hash": "^3.3.0"
 	},
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.js",

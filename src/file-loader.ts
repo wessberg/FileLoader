@@ -1,9 +1,6 @@
 import {existsSync, lstat, lstatSync, readdir, readdirSync, readFile, readFileSync} from "fs";
 import {IFileLoader} from "./i-file-loader";
-// @ts-ignore
-import * as md5File from "md5-file/promise";
 
-// @ts-ignore
 import {hashElement} from "folder-hash";
 
 /**
@@ -12,13 +9,13 @@ import {hashElement} from "folder-hash";
  * @author Frederik Wessberg
  */
 export class FileLoader implements IFileLoader {
-
 	/**
 	 * Checks if the given path exists and returns a Promise that resolves with a boolean value.
-	 * @param {string} path
-	 * @returns {Promise<boolean>}
+	 *
+	 * @param path
+	 * @returns
 	 */
-	public async exists (path: string): Promise<boolean> {
+	async exists(path: string): Promise<boolean> {
 		try {
 			return (await this.load(path)) != null;
 		} catch {
@@ -28,19 +25,21 @@ export class FileLoader implements IFileLoader {
 
 	/**
 	 * Checks if the given path exists and returns a a boolean value.
-	 * @param {string} path
-	 * @returns {boolean}
+	 *
+	 * @param path
+	 * @returns
 	 */
-	public existsSync (path: string): boolean {
+	existsSync(path: string): boolean {
 		return existsSync(path);
 	}
 
 	/**
 	 * Loads the file on the given path and resolves the Promise with a Buffer when the files has successfully loaded.
-	 * @param {string} path
-	 * @returns {Promise<Buffer>}
+	 *
+	 * @param path
+	 * @returns
 	 */
-	public async load (path: string): Promise<Buffer> {
+	async load(path: string): Promise<Buffer> {
 		return new Promise<Buffer>((resolve, reject) => {
 			readFile(path, (err, result) => {
 				if (err != null) reject(err);
@@ -51,40 +50,43 @@ export class FileLoader implements IFileLoader {
 
 	/**
 	 * Loads the file on the given path synchronously and returns a Buffer.
-	 * @param {string} path
-	 * @returns {Buffer}
+	 *
+	 * @param path
+	 * @returns
 	 */
-	public loadSync (path: string): Buffer {
+	loadSync(path: string): Buffer {
 		return readFileSync(path);
 	}
 
 	/**
 	 * Converts an Iterable to an array, if it isn't already.
-	 * @param {Iterable<string>} extensions
-	 * @returns {string[]}
+	 *
+	 * @param extensions
+	 * @returns
 	 */
-	private toArray (extensions: Iterable<string>): string[] {
+	private toArray(extensions: Iterable<string>): string[] {
 		return Array.isArray(extensions) ? extensions : [...extensions];
 	}
 
 	/**
 	 * Checks for the existence on disk of the given path and first match in the array of extensions.
 	 * It returns a Promise that will resolve with a tuple with a boolean indicating whether it exists or not and the full path to the file, if any.
-	 * @param {string} path
-	 * @param {Iterable<string>} extensions
-	 * @param {Iterable<string>} [excludeExtensions]
-	 * @returns {Promise<string|null>}
+	 *
+	 * @param path
+	 * @param extensions
+	 * @param [excludeExtensions]
+	 * @returns
 	 */
-	public async getWithFirstMatchedExtension (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): Promise<string|null> {
+	async getWithFirstMatchedExtension(path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): Promise<string | null> {
 		for (const ext of extensions) {
 			// If the path already ends with that extension and it exists, return it
-			if (path.endsWith(this.normalizeExtension(ext)) && !this.matchedFileIsExcluded(path, excludeExtensions) && await this.exists(path)) {
+			if (path.endsWith(this.normalizeExtension(ext)) && !this.matchedFileIsExcluded(path, excludeExtensions) && (await this.exists(path))) {
 				return path;
 			}
 
 			const fullPath = `${path}${this.normalizeExtension(ext)}`;
 			// If the file exists but is actually excluded, continue.
-			if (await this.exists(fullPath) && !this.matchedFileIsExcluded(fullPath, excludeExtensions)) {
+			if ((await this.exists(fullPath)) && !this.matchedFileIsExcluded(fullPath, excludeExtensions)) {
 				return fullPath;
 			}
 		}
@@ -94,12 +96,13 @@ export class FileLoader implements IFileLoader {
 	/**
 	 * Checks for the existence on disk of the given path and first match in the array of extensions.
 	 * It returns a tuple with a boolean indicating whether it exists or not and the full path to the file, if any.
-	 * @param {string} path
-	 * @param {Iterable<string>} extensions
-	 * @param {Iterable<string>} [excludeExtensions]
-	 * @returns {string|null}
+	 *
+	 * @param path
+	 * @param extensions
+	 * @param [excludeExtensions]
+	 * @returns
 	 */
-	public getWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): string|null {
+	getWithFirstMatchedExtensionSync(path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): string | null {
 		for (const ext of extensions) {
 			// If the path already ends with that extension and it exists, return it
 			if (path.endsWith(this.normalizeExtension(ext)) && !this.matchedFileIsExcluded(path, excludeExtensions) && this.existsSync(path)) {
@@ -117,26 +120,27 @@ export class FileLoader implements IFileLoader {
 
 	/**
 	 * Returns true if a file path is included in the given set of excluded extensions.
-	 * @param {string} filePath
-	 * @param {Iterable<string>} excludeExtensions
-	 * @returns {boolean}
+	 *
+	 * @param filePath
+	 * @param excludeExtensions
+	 * @returns
 	 */
-	private matchedFileIsExcluded (filePath: string, excludeExtensions?: Iterable<string>): boolean {
+	private matchedFileIsExcluded(filePath: string, excludeExtensions?: Iterable<string>): boolean {
 		if (excludeExtensions == null) return false;
 
-		return this.toArray(excludeExtensions)
-			.some(excludedExtension => filePath.endsWith(excludedExtension));
+		return this.toArray(excludeExtensions).some(excludedExtension => filePath.endsWith(excludedExtension));
 	}
 
 	/**
 	 * Loads the first matched file associated with the given path combined with the given array of ordered extensions.
 	 * and returns a tuple of the buffer and the matched path.
-	 * @param {string} path
-	 * @param {Iterable<string>} extensions
-	 * @param {Iterable<string>} [excludeExtensions]
-	 * @returns {[Buffer|null, string|null]}
+	 *
+	 * @param path
+	 * @param extensions
+	 * @param [excludeExtensions]
+	 * @returns
 	 */
-	public loadWithFirstMatchedExtensionSync (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): null|[Buffer, string] {
+	loadWithFirstMatchedExtensionSync(path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): null | [Buffer, string] {
 		const match = this.getWithFirstMatchedExtensionSync(path, extensions, excludeExtensions);
 		return match == null ? null : [this.loadSync(match), match];
 	}
@@ -144,22 +148,28 @@ export class FileLoader implements IFileLoader {
 	/**
 	 * Loads the first matched file associated with the given path combined with the given array of ordered extensions.
 	 * and returns a Promise that will eventually resolve with a tuple of the buffer and the matched path.
-	 * @param {string} path
-	 * @param {Iterable<string>} extensions
-	 * @param {Iterable<string>} [excludeExtensions]
-	 * @returns {Promise<[Buffer|null, string|null]>}
+	 *
+	 * @param path
+	 * @param extensions
+	 * @param [excludeExtensions]
+	 * @returns
 	 */
-	public async loadWithFirstMatchedExtension (path: string, extensions: Iterable<string>, excludeExtensions?: Iterable<string>): Promise<null|[Buffer, string]> {
+	async loadWithFirstMatchedExtension(
+		path: string,
+		extensions: Iterable<string>,
+		excludeExtensions?: Iterable<string>
+	): Promise<null | [Buffer, string]> {
 		const match = await this.getWithFirstMatchedExtension(path, extensions, excludeExtensions);
 		return match == null ? null : [await this.load(match), match];
 	}
 
 	/**
 	 * Loads any of the given paths and resolves the Promise when the first one has succesfully loaded.
-	 * @param {Iterable<string>} paths
-	 * @returns {Promise<[Buffer,string]|null>}
+	 *
+	 * @param paths
+	 * @returns
 	 */
-	public async loadAny (paths: Iterable<string>): Promise<null|[Buffer, string]> {
+	async loadAny(paths: Iterable<string>): Promise<null | [Buffer, string]> {
 		for (const path of paths) {
 			try {
 				const loaded = await this.load(path);
@@ -175,10 +185,11 @@ export class FileLoader implements IFileLoader {
 
 	/**
 	 * Loads any of the given paths and returns the one that loads first.
-	 * @param {Iterable<string>} paths
-	 * @returns {[Buffer|null,string|null]}
+	 *
+	 * @param paths
+	 * @returns
 	 */
-	public loadAnySync (paths: Iterable<string>): null|[Buffer, string] {
+	loadAnySync(paths: Iterable<string>): null | [Buffer, string] {
 		for (const path of paths) {
 			try {
 				const loaded = this.loadSync(path);
@@ -194,68 +205,75 @@ export class FileLoader implements IFileLoader {
 
 	/**
 	 * Loads all the given paths and returns a Promise that will resolve with an array of Buffers.
-	 * @param {Iterable<string>} paths
-	 * @returns {Promise<Buffer[]>}
+	 *
+	 * @param paths
+	 * @returns
 	 */
-	public async loadAll (paths: Iterable<string>): Promise<Buffer[]> {
-		return await Promise.all(
-			this.toArray(paths)
-				.map(async path => await this.load(path))
-		);
+	async loadAll(paths: Iterable<string>): Promise<Buffer[]> {
+		return await Promise.all(this.toArray(paths).map(async path => await this.load(path)));
 	}
 
 	/**
 	 * Loads all the given paths and returns an array of Buffers.
-	 * @param {Iterable<string>} paths
-	 * @returns {Buffer[]}
+	 *
+	 * @param paths
+	 * @returns
 	 */
-	public loadAllSync (paths: Iterable<string>): Buffer[] {
-		return this.toArray(paths)
-			.map(path => this.loadSync(path));
+	loadAllSync(paths: Iterable<string>): Buffer[] {
+		return this.toArray(paths).map(path => this.loadSync(path));
 	}
 
 	/**
 	 * Gets a list of all files in the given directory. If an array of extensions are given,
 	 * only files with any of those extensions will be matched.
-	 * @param {string} directory
-	 * @param {Iterable<string>} [extensions]
-	 * @param {Iterable<string>} [excludedExtensions]
-	 * @param {boolean} [recursive=false]
-	 * @returns {Promise<Iterable<string>>}
+	 *
+	 * @param directory
+	 * @param [extensions]
+	 * @param [excludedExtensions]
+	 * @param [recursive=false]
+	 * @returns
 	 */
-	public async getAllInDirectory (directory: string, extensions?: Iterable<string>, excludedExtensions?: Iterable<string>, recursive: boolean = false): Promise<string[]> {
+	async getAllInDirectory(
+		directory: string,
+		extensions?: Iterable<string>,
+		excludedExtensions?: Iterable<string>,
+		recursive = false
+	): Promise<string[]> {
 		const paths = await this.readdirPromise(directory);
 		const newPaths: string[] = [];
 
-		await Promise.all(paths.map(async path => {
-			const filePath = `${directory}/${path}`;
-			const isDirectory = await this.isDirectory(filePath);
+		await Promise.all(
+			paths.map(async path => {
+				const filePath = `${directory}/${path}`;
+				const isDirectory = await this.isDirectory(filePath);
 
-			// If the file is not a directory, allow it if it has a proper extension
-			if (!isDirectory) {
-				if (this.fileHasValidExtension(filePath, extensions) && !this.matchedFileIsExcluded(filePath, excludedExtensions)) newPaths.push(filePath);
-				return;
-			}
+				// If the file is not a directory, allow it if it has a proper extension
+				if (!isDirectory) {
+					if (this.fileHasValidExtension(filePath, extensions) && !this.matchedFileIsExcluded(filePath, excludedExtensions)) newPaths.push(filePath);
+					return;
+				}
 
-			// If the file is a directory and we shouldn't recursive, don't include the file.
-			if (!recursive) return false;
+				// If the file is a directory and we shouldn't recursive, don't include the file.
+				if (!recursive) return false;
 
-			// Otherwise, recursively push more paths to the array of new paths.
-			return newPaths.push(...(await this.getAllInDirectory(filePath, extensions, excludedExtensions, recursive)));
-		}));
+				// Otherwise, recursively push more paths to the array of new paths.
+				return newPaths.push(...(await this.getAllInDirectory(filePath, extensions, excludedExtensions, recursive)));
+			})
+		);
 		return newPaths;
 	}
 
 	/**
 	 * Gets a list of all files in the given directory. If an array of extensions are given,
 	 * only files with any of those extensions will be matched.
-	 * @param {string} directory
-	 * @param {Iterable<string>} [extensions]
-	 * @param {Iterable<string>} [excludedExtensions]
-	 * @param {boolean} [recursive]
-	 * @returns {Iterable<string>}
+	 *
+	 * @param directory
+	 * @param [extensions]
+	 * @param [excludedExtensions]
+	 * @param [recursive]
+	 * @returns
 	 */
-	public getAllInDirectorySync (directory: string, extensions?: Iterable<string>, excludedExtensions?: Iterable<string>, recursive: boolean = false): string[] {
+	getAllInDirectorySync(directory: string, extensions?: Iterable<string>, excludedExtensions?: Iterable<string>, recursive = false): string[] {
 		const paths = readdirSync(directory);
 		const newPaths: string[] = [];
 
@@ -281,38 +299,43 @@ export class FileLoader implements IFileLoader {
 	/**
 	 * Loads all files inside the given directory with the given extension and returns
 	 * a Promise that will resolve with an array of Buffers.
-	 * @param {string} directory
-	 * @param {Iterable<string>} [extensions]
-	 * @param {Iterable<string>} [excludedExtensions]
-	 * @param {boolean} [recursive=false]
-	 * @returns {Promise<Buffer[]>}
+	 *
+	 * @param directory
+	 * @param [extensions]
+	 * @param [excludedExtensions]
+	 * @param [recursive=false]
+	 * @returns
 	 */
-	public async loadAllInDirectory (directory: string, extensions?: Iterable<string>, excludedExtensions?: Iterable<string>, recursive: boolean = false): Promise<Buffer[]> {
+	async loadAllInDirectory(
+		directory: string,
+		extensions?: Iterable<string>,
+		excludedExtensions?: Iterable<string>,
+		recursive = false
+	): Promise<Buffer[]> {
 		const paths = await this.getAllInDirectory(directory, extensions, excludedExtensions, recursive);
-		return await Promise.all(
-			paths.map(async path => await this.load(path))
-		);
+		return await Promise.all(paths.map(async path => await this.load(path)));
 	}
 
 	/**
 	 * Loads all files inside the given directory with the given extension and returns an array of Buffers.
-	 * @param {string} directory
-	 * @param {Iterable<string>} [extensions]
-	 * @param {Iterable<string>} [excludedExtensions]
-	 * @param {boolean} [recursive=false]
-	 * @returns {Buffer[]}
+	 *
+	 * @param directory
+	 * @param [extensions]
+	 * @param [excludedExtensions]
+	 * @param [recursive=false]
+	 * @returns
 	 */
-	public loadAllInDirectorySync (directory: string, extensions?: Iterable<string>, excludedExtensions?: Iterable<string>, recursive: boolean = false): Buffer[] {
-		return this.getAllInDirectorySync(directory, extensions, excludedExtensions, recursive)
-			.map(path => this.loadSync(path));
+	loadAllInDirectorySync(directory: string, extensions?: Iterable<string>, excludedExtensions?: Iterable<string>, recursive = false): Buffer[] {
+		return this.getAllInDirectorySync(directory, extensions, excludedExtensions, recursive).map(path => this.loadSync(path));
 	}
 
 	/**
 	 * Returns true if a path is a directory
-	 * @param {string} path
-	 * @returns {Promise<boolean>}
+	 *
+	 * @param path
+	 * @returns
 	 */
-	public async isDirectory (path: string): Promise<boolean> {
+	async isDirectory(path: string): Promise<boolean> {
 		return new Promise<boolean>(resolve => {
 			lstat(path, (err, stats) => {
 				if (err != null) resolve(false);
@@ -323,10 +346,11 @@ export class FileLoader implements IFileLoader {
 
 	/**
 	 * Returns true if a path is a directory
-	 * @param {string} path
-	 * @returns {boolean}
+	 *
+	 * @param path
+	 * @returns
 	 */
-	public isDirectorySync (path: string): boolean {
+	isDirectorySync(path: string): boolean {
 		try {
 			return lstatSync(path).isDirectory();
 		} catch (ex) {
@@ -336,30 +360,33 @@ export class FileLoader implements IFileLoader {
 
 	/**
 	 * Returns the extension with a prefixed "."
-	 * @param {string} extension
-	 * @returns {string}
+	 *
+	 * @param extension
+	 * @returns
 	 */
-	private normalizeExtension (extension: string): string {
+	private normalizeExtension(extension: string): string {
 		return extension.startsWith(".") ? extension : `.${extension}`;
 	}
 
 	/**
 	 * Returns true if the file has an extension that is supported.
-	 * @param {string} file
-	 * @param {Iterable<string>} extensions
-	 * @returns {boolean}
+	 *
+	 * @param file
+	 * @param extensions
+	 * @returns
 	 */
-	private fileHasValidExtension (file: string, extensions?: Iterable<string>): boolean {
+	private fileHasValidExtension(file: string, extensions?: Iterable<string>): boolean {
 		const array = extensions == null ? null : this.toArray(extensions);
 		return array == null ? true : array.some(ext => file.endsWith(this.normalizeExtension(ext)));
 	}
 
 	/**
 	 * A Promise-based 'readdir' function
-	 * @param {string} directory
-	 * @returns {Promise<string[]>}
+	 *
+	 * @param directory
+	 * @returns
 	 */
-	private async readdirPromise (directory: string): Promise<string[]> {
+	private async readdirPromise(directory: string): Promise<string[]> {
 		return new Promise<string[]>((resolve, reject) => {
 			readdir(directory, (err, paths) => {
 				if (err != null) reject(err);
@@ -370,10 +397,11 @@ export class FileLoader implements IFileLoader {
 
 	/**
 	 * Gets the md5 checksum of the file on the given path
-	 * @param {string} path
-	 * @returns {Promise<string>}
+	 *
+	 * @param path
+	 * @returns
 	 */
-	public async getChecksum (path: string): Promise<string> {
+	async getChecksum(path: string): Promise<string> {
 		return (await hashElement(path)).hash;
 	}
 }

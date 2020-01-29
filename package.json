@@ -52,6 +52,7 @@
 	],
 	"license": "MIT",
 	"devDependencies": {
+		"@types/node": "13.5.1",
 		"@wessberg/rollup-plugin-ts": "^1.2.14",
 		"@wessberg/scaffold": "^1.0.23",
 		"@wessberg/ts-config": "1.0.6",
@@ -75,7 +76,6 @@
 		"eslint-plugin-import": "^2.20.0"
 	},
 	"dependencies": {
-		"@types/node": "13.5.1",
 		"folder-hash": "^3.3.0"
 	},
 	"main": "./dist/cjs/index.js",

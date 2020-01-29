@@ -1,6 +1,6 @@
 {
 	"name": "@wessberg/fileloader",
-	"version": "1.1.10",
+	"version": "1.1.11",
 	"description": "A Promise-based class that can offers different ways of loading files from disk, including wrappers around the synchronous I/O methods from node.",
 	"scripts": {
 		"generate:scaffold": "scaffold all --yes",

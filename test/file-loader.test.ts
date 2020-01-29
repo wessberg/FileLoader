@@ -1,13 +1,15 @@
-import {test} from "ava";
+import test from "ava";
 import {IFileLoader} from "../src/i-file-loader";
 import {FileLoader} from "../src/file-loader";
 import {join} from "path";
 
 let fileLoader: IFileLoader;
-const ASSET_DIR = join(__dirname, "../../", "test/asset");
+const ASSET_DIR = join(__dirname, "asset");
 const DUMMY_PATH = `${ASSET_DIR}/dummy`;
 const DUMMY_TXT_PATH = `${DUMMY_PATH}.txt`;
-test.beforeEach(() => fileLoader = new FileLoader());
+test.beforeEach(() => {
+	fileLoader = new FileLoader();
+});
 
 test(`load() -> Loads a file from disk properly`, async t => {
 	const buffer = await fileLoader.load(DUMMY_TXT_PATH);
@@ -69,12 +71,12 @@ test(`getFilesInDirectorySync() -> Gets all files in the given directory #4`, t 
 	t.true(files.length === 0);
 });
 
-test(`getFilesInDirectory() -> Gets all files in the given directory #5`, t => {
+test(`getFilesInDirectorySync() -> Gets all files in the given directory #5`, t => {
 	const files = fileLoader.getAllInDirectorySync(ASSET_DIR, [".weird_extension"]);
 	t.true(files.length === 0);
 });
 
-test(`getFilesInDirectory() -> Gets all files in the given directory #6`, t => {
+test(`getFilesInDirectorySync() -> Gets all files in the given directory #6`, t => {
 	const files = fileLoader.getAllInDirectorySync(ASSET_DIR);
 	t.true(files.length === 2);
 });

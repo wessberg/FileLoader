@@ -3,31 +3,21 @@
 	"version": "1.1.9",
 	"description": "A Promise-based class that can offers different ways of loading files from disk, including wrappers around the synchronous I/O methods from node.",
 	"scripts": {
-		"test": "NODE_ENV=TEST ava --fail-fast",
-		"changelog:generate": "conventional-changelog --outfile CHANGELOG.md --release-count 0",
-		"readme:badges": "node node_modules/@wessberg/ts-config/readme/badge/helper/add-badges.js",
-		"readme:refresh": "npm run changelog:generate && npm run readme:badges",
-		"commit:readme": "npm run readme:refresh && git commit -am \"Bumped version\" --no-verify || true",
-		"clean:dist": "rm -r -f dist",
-		"clean:compiled": "rm -r -f compiled",
-		"clean": "npm run clean:dist && npm run clean:compiled",
-		"tsc:dist:cjs": "tsc --module commonjs --outDir dist/cjs -p tsconfig.dist.json --typeRoots \"./node_modules/@types\",\"./node_modules/typescript/lib/typescript\"",
-		"tsc:dist:es2015": "tsc --module es2015 --outDir dist/es2015 -p tsconfig.dist.json --typeRoots \"./node_modules/@types\",\"./node_modules/typescript/lib/typescript\"",
-		"tsc:test": "tsc --module commonjs --target es2017 --sourceMap --typeRoots \"./node_modules/@types\",\"./node_modules/typescript/lib/typescript\"",
-		"build:cjs": "npm run tsc:dist:cjs",
-		"build:es2015": "npm run tsc:dist:es2015",
-		"prebuild": "npm run clean",
-		"build": "npm run build:cjs & npm run build:es2015",
-		"tslint": "tslint -c tslint.json -p tsconfig.json",
-		"validate": "npm run tslint && npm run test",
-		"pretest": "npm run clean:compiled && npm run tsc:test",
-		"posttest": "npm run clean:compiled",
-		"prepublishOnly": "npm run validate && npm run build",
-		"precommit": "npm run tslint && exit 0",
-		"prepush": "npm run validate && exit 0",
-		"publish:major": "npm version major && npm run commit:readme && git push --no-verify && npm publish",
-		"publish:minor": "npm version minor && npm run commit:readme && git push --no-verify && npm publish",
-		"publish:patch": "npm version patch && npm run commit:readme && git push --no-verify && npm publish"
+		"generate:scaffold": "scaffold all --yes",
+		"generate:changelog": "standard-changelog --first-release",
+		"generate:all": "pnpm run generate:scaffold && pnpm run generate:changelog",
+		"clean:dist": "rimraf dist",
+		"clean": "pnpm run clean:dist",
+		"lint": "tsc --noEmit && eslint \"src/**/*.ts\" --color",
+		"prettier": "prettier --write '{src,test,documentation}/**/*.{js,ts,json,html,xml,css,md}'",
+		"test": "ava",
+		"prebuild": "pnpm run clean:dist",
+		"build": "pnpm run rollup",
+		"watch": "pnpm run rollup -- --watch",
+		"rollup": "rollup -c rollup.config.js",
+		"preversion": "npm run lint && NODE_ENV=production pnpm run build",
+		"version": "pnpm run generate:all && git add .",
+		"release": "np --no-cleanup --no-yarn"
 	},
 	"keywords": [
 		"file",
@@ -39,40 +29,81 @@
 		"io",
 		"disk"
 	],
-	"devDependencies": {
-		"@wessberg/ts-config": "0.0.26",
-		"ava": "^0.25.0",
-		"conventional-changelog-cli": "^1.3.21",
-		"husky": "latest",
-		"tslint": "^5.9.1",
-		"typescript": "^2.8.1"
-	},
-	"dependencies": {
-		"@types/node": "^9.6.1",
-		"folder-hash": "^1.1.2",
-		"md5-file": "^4.0.0",
-		"tslib": "^1.9.0"
-	},
-	"main": "./dist/cjs/index.js",
-	"module": "./dist/es2015/index.js",
-	"browser": "./dist/es2015/index.js",
-	"types": "./dist/es2015/index.d.ts",
-	"typings": "./dist/es2015/index.d.ts",
-	"es2015": "./dist/es2015/index.js",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/wessberg/fileloader.git"
 	},
+	"files": [
+		"dist/**/*.*"
+	],
 	"bugs": {
 		"url": "https://github.com/wessberg/fileloader/issues"
 	},
-	"author": {
-		"name": "Frederik Wessberg",
-		"email": "frederikwessberg@hotmail.com",
-		"url": "https://github.com/wessberg"
+	"contributors": [
+		{
+			"name": "Frederik Wessberg",
+			"email": "frederikwessberg@hotmail.com",
+			"url": "https://github.com/wessberg",
+			"imageUrl": "https://avatars2.githubusercontent.com/u/20454213?s=460&v=4",
+			"role": "Lead Developer",
+			"twitter": "FredWessberg",
+			"github": "wessberg"
+		}
+	],
+	"license": "MIT",
+	"devDependencies": {
+		"@wessberg/rollup-plugin-ts": "^1.2.14",
+		"@wessberg/scaffold": "^1.0.23",
+		"@wessberg/ts-config": "1.0.6",
+		"rimraf": "^3.0.1",
+		"pnpm": "^4.8.0",
+		"ava": "^3.1.0",
+		"husky": "^4.2.1",
+		"np": "^5.2.1",
+		"prettier": "^1.19.1",
+		"pretty-quick": "^2.0.1",
+		"rollup": "^1.30.1",
+		"standard-changelog": "^2.0.21",
+		"ts-node": "^8.6.2",
+		"typescript": "^3.7.5",
+		"tslib": "^1.10.0",
+		"@typescript-eslint/eslint-plugin": "^2.18.0",
+		"@typescript-eslint/parser": "^2.18.0",
+		"eslint": "^6.8.0",
+		"eslint-config-prettier": "^6.10.0",
+		"eslint-plugin-jsdoc": "^21.0.0",
+		"eslint-plugin-import": "^2.20.0"
 	},
+	"dependencies": {
+		"@types/node": "13.5.1",
+		"folder-hash": "^3.3.0",
+		"md5-file": "^4.0.0"
+	},
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.js",
+	"browser": "./dist/esm/index.js",
+	"types": "./dist/esm/index.d.ts",
+	"typings": "./dist/esm/index.d.ts",
+	"es2015": "./dist/esm/index.js",
 	"engines": {
-		"node": ">=9.0.0"
+		"node": ">=8.0.0"
 	},
-	"license": "MIT"
+	"ava": {
+		"files": [
+			"test/**.test.ts"
+		],
+		"verbose": true,
+		"timeout": "40s",
+		"extensions": [
+			"ts"
+		],
+		"require": [
+			"ts-node/register/transpile-only"
+		]
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "pretty-quick --staged"
+		}
+	}
 }

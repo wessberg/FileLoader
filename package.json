@@ -33,12 +33,12 @@
 		"type": "git",
 		"url": "https://github.com/wessberg/fileloader.git"
 	},
-	"files": [
-		"dist/**/*.*"
-	],
 	"bugs": {
 		"url": "https://github.com/wessberg/fileloader/issues"
 	},
+	"files": [
+		"dist/**/*.*"
+	],
 	"contributors": [
 		{
 			"name": "Frederik Wessberg",
@@ -52,28 +52,28 @@
 	],
 	"license": "MIT",
 	"devDependencies": {
-		"@types/node": "13.5.1",
-		"@wessberg/rollup-plugin-ts": "^1.2.14",
-		"@wessberg/scaffold": "^1.0.23",
-		"@wessberg/ts-config": "1.0.6",
-		"rimraf": "^3.0.1",
-		"pnpm": "^4.8.0",
-		"ava": "^3.1.0",
-		"husky": "^4.2.1",
+		"@types/node": "13.11.0",
+		"@wessberg/rollup-plugin-ts": "^1.2.23",
+		"@wessberg/scaffold": "^1.0.29",
+		"@wessberg/ts-config": "1.0.8",
+		"rimraf": "^3.0.2",
+		"pnpm": "^4.12.5",
+		"ava": "^3.6.0",
+		"husky": "^4.2.3",
 		"np": "^5.2.1",
-		"prettier": "^1.19.1",
+		"prettier": "^2.0.4",
 		"pretty-quick": "^2.0.1",
-		"rollup": "^1.30.1",
+		"rollup": "^2.3.3",
 		"standard-changelog": "^2.0.21",
-		"ts-node": "^8.6.2",
-		"typescript": "^3.7.5",
-		"tslib": "^1.10.0",
-		"@typescript-eslint/eslint-plugin": "^2.18.0",
-		"@typescript-eslint/parser": "^2.18.0",
+		"ts-node": "^8.8.2",
+		"typescript": "^3.8.3",
+		"tslib": "^1.11.1",
+		"@typescript-eslint/eslint-plugin": "^2.26.0",
+		"@typescript-eslint/parser": "^2.26.0",
 		"eslint": "^6.8.0",
-		"eslint-config-prettier": "^6.10.0",
-		"eslint-plugin-jsdoc": "^21.0.0",
-		"eslint-plugin-import": "^2.20.0"
+		"eslint-config-prettier": "^6.10.1",
+		"eslint-plugin-jsdoc": "^22.1.0",
+		"eslint-plugin-import": "^2.20.2"
 	},
 	"dependencies": {
 		"folder-hash": "^3.3.0"

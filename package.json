@@ -57,7 +57,7 @@
 		"@wessberg/scaffold": "^1.0.29",
 		"@wessberg/ts-config": "1.0.8",
 		"rimraf": "^3.0.2",
-		"pnpm": "^4.12.5",
+		"pnpm": "^7.33.4",
 		"ava": "^3.6.0",
 		"husky": "^4.2.3",
 		"np": "^5.2.1",
